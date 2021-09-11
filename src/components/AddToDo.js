@@ -5,7 +5,7 @@ function AddToDo({ setAddModalOpen, selectedDate, saveTask }) {
   const [inputText, setInputText] = useState("");
   return (
     <section className="modal">
-      <p>
+      <div>
       Lägg till uppgift {moment(selectedDate.date).format("DD MMMM")}
       <input
       required
@@ -16,7 +16,7 @@ function AddToDo({ setAddModalOpen, selectedDate, saveTask }) {
       <button onClick = {()=>saveTask(inputText)}
       >spara</button>
       {<button onClick={()=>setAddModalOpen(false)}>stäng</button> /*kanske behöver jag set selectedDate till null oxå? */}
-    </p>
+    </div>
     </section>
   );
 }
