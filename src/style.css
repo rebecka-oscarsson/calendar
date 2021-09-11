@@ -6,10 +6,26 @@ body {
   background-color: antiquewhite;
 }
 
-.day {border: 1px solid olive}
+table {table-layout: fixed;}
 
-.today {background-color: white; border: 1px solid olive}
+.day {border: 1px solid grey; background-color: white;}
+
+.today {background-color: peachpuff;}
 
 #root {display:grid; grid-template-columns: 1fr 3fr; grid-template-rows: 1fr; min-height: 100vh;}
 
-table {padding: 3rem}
+table {padding: 3rem; table-layout: fixed;}
+
+td {vertical-align: top; width:14%}
+
+td>div {display: flex; flex-direction: column; height: 100%; overflow: auto;}
+
+td>div>span {display: flex; justify-content: space-between; padding-bottom: 2rem;}
+
+.date-digit {font-size: x-large;}
+
+.modal {position:absolute;
+  left: 0; top:0;background-color: rgba(0, 0, 0, 0.5);height: 100vh; width: 100vw;}
+
+.modal>p {display:flex; flex-direction: column; justify-content: space-around; align-items:center; width:50vw; height: 50vh; position:absolute;
+left: 25vw; top:25vh; background-color: antiquewhite; box-shadow: rgba(0, 0, 0, 0.5) 5px 5px 40px; border-radius: 20px;}

@@ -1,20 +1,22 @@
 import React, { useState } from "react";
+import moment from "moment";
 
-function AddToDo({ date, onSave, onCancel }) {
+function AddToDo({ setAddModalOpen, selectedDate, saveTask }) {
   const [inputText, setInputText] = useState("");
-  const [error, setError] = useState("");//vad är detta, hit har jag ej kommit
   return (
-    <section>
-      saker att göra {date}
+    <section className="modal">
+      <p>
+      Lägg till uppgift {moment(selectedDate.date).format("DD MMMM")}
       <input
-       className= {error ? "emptyInput" : ""}
-        placeholder="nåt jag måste göra" 
+      required
+        placeholder="att göra idag" 
         value={inputText}
         onChange={(e) => setInputText(e.target.value)}
       ></input>
-      <button onClick = {()=>{if(inputText){setError(false); onSave(inputText)} else {setError(true)}}}
+      <button onClick = {()=>saveTask(inputText)}
       >spara</button>
-      <button onClick={onCancel}>näh</button>
+      {<button onClick={()=>setAddModalOpen(false)}>stäng</button> /*kanske behöver jag set selectedDate till null oxå? */}
+    </p>
     </section>
   );
 }

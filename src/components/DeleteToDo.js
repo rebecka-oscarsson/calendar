@@ -1,14 +1,14 @@
 import React from 'react';
+import moment from "moment";
 
-function DeleteToDo({ onDelete, eventText, onClose }) {
+function DeleteToDo({setDeleteModalOpen, selectedDate, setSelectedDate }) {
     
     return (
-      <section>
-        delete things to do
-        <p>{eventText}</p>
-        <button onClick = {onDelete}
-        >delete</button>
-        <button onClick={onClose}>close</button>
+      <section className="modal"><p>
+        Saker att göra {moment(selectedDate.date).format("DD MMMM")}
+        <div>{selectedDate.toDo.map(toDo=><p>{toDo} <button
+        >ta bort</button></p>)}</div>
+        <button onClick={()=>{setDeleteModalOpen(false); setSelectedDate(null)}}>stäng</button></p>
       </section>
     );
   }

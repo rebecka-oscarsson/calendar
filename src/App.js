@@ -1,10 +1,11 @@
 import { useState, useEffect } from "react";
-import Header from "./components/Header";
-import Day from "./components/Day";
+import CalendarHeader from "./components/CalendarHeader";
+import CalendarBody from "./components/CalendarBody";
 import List from "./components/List";
 import AddToDo from "./components/AddToDo";
 import DeleteToDo from "./components/DeleteToDo";
 import moment from "moment";
+
 
 function App() {
   //skapa klass
@@ -18,12 +19,12 @@ function App() {
   let currentList = JSON.parse(localStorage.getItem("savedList"));
   if (!currentList)
     currentList = [
-      new ToDo("vattna morfar", 12),
-      new ToDo("promenera krukväxten", 1),
-      new ToDo("dammsug hunden", 5),
+      new ToDo("vattna morfar", "28 September 2021"),
+      new ToDo("rasta krukväxten", "6 January 2022"),
+      new ToDo("dammsug katten", "28 September 2021"),
     ];
 
-  let dayString = moment().toString(); //känns fel. var ska jag ha den här? den ändras ju inte när månad ändras
+  // let dayString = moment().toString();
 
   //alla states
   const [days, setDays] = useState([]);
@@ -32,29 +33,35 @@ function App() {
   const [monthHeadline, setMonthHeadline] = useState(
     moment().format("MMMM YYYY")
   );
-  const [selectedDate, setSelectedDate] = useState();
+  const [selectedDate, setSelectedDate] = useState({date:null, toDo:[]});
+const [addModalOpen, setAddModalOpen] = useState(false);
+const [deleteModalOpen, setDeleteModalOpen] = useState(false);
 
   // moment.locale('sv'); funkar inte
 
-  let dateToday = moment().date();
 
-  //en funktion som hittar toDos för ett datum
-  let tasksForDate = (date) => {
-    toDoList.find((task) => task.date === date);
-  };
-
+ //en funktion som hittar toDos för ett datum
+let tasksForDate = (date) =>
+{let tasks = []
+  for (let index = 0; index < toDoList.length; index++) {
+  if (toDoList[index].date === date)
+  {tasks.push(toDoList[index].task)}}
+  return tasks
+}
   //en funktion som gör en array av dagarna i en månad
   function createDaysArray(numberOfSquares, emptySquares, momentObj) {
     let daysArray = [];
+    let dateToday = moment().date();
     for (let index = 0; index < numberOfSquares; index++) {
       if (index < emptySquares) {
         daysArray.push({ date: null });
       } else {
         let dateOfDay = index - emptySquares + 1; //lägger på 1 eftersom index börjar på noll
+        let dateString = dateOfDay + " " + momentObj.format("MMMM YYYY").toString();
         daysArray.push({
-          id: dateOfDay + " " + momentObj.format("MMMM YYYY"), //momentObj är den första i månaden för jag glömt kopiera och ändrat originalet
+          id: dateString, //momentObj är den första i månaden för jag glömt kopiera och ändrat originalet
           date: dateOfDay,
-          toDo: tasksForDate(dayString),
+          toDo: tasksForDate(dateString) ? tasksForDate(dateString) : false,   
           isToday: dateOfDay === dateToday && monthIndex === 0,
         });
       }
@@ -62,7 +69,7 @@ function App() {
     return daysArray;
   }
 
-  //funktionen som skapar kalendern
+  //funktionen som skapar kalendern och körs i useeffect
   function createCalendar() {
     //skapa ett momentobjekt:
     let momentObj = moment();
@@ -90,17 +97,14 @@ function App() {
   }
 
   //funktion som delar upp månads-array i vecko-arrays
-  function sliceIntoChunks(arr, chunkSize) {
-    const res = [];
-    for (let i = 0; i < arr.length; i += chunkSize) {
-      const chunk = arr.slice(i, i + chunkSize);
-      res.push(chunk);
+  function splitInWeeks(monthArray) {
+    const result = [];
+    for (let i = 0; i < monthArray.length; i += 7) {
+      const weekArray = monthArray.slice(i, i + 7);
+      result.push(weekArray);
     }
-    return res;
+    return result;
   }
-
-  //ska den här ligga löst här?
-  let weeks = sliceIntoChunks(days, 7);
 
   // Funktion för att lägga till en ny item till en lista.
   function saveList(savedList, currentList) {
@@ -116,15 +120,16 @@ function App() {
     return currentList;
   }
 
+
   useEffect(createCalendar, [toDoList, monthIndex]);
   //första argumentet är en funktion, andra argumentet en array av värden, när dessa ändras körs funktionen
 
   return (
     <>
-      <List toDoList={toDoList} />
+      <List toDoList={toDoList} monthHeadline={monthHeadline} />
+
       <table>
-        <thead>
-          <Header
+          <CalendarHeader
             monthHeadline={monthHeadline}
             showNext={() => {
               setmonthIndex(monthIndex + 1);
@@ -133,52 +138,35 @@ function App() {
               setmonthIndex(monthIndex - 1);
             }}
           />
-          <tr>
-            <th>Måndag</th>
-            <th>Tisdag</th>
-            <th>Onsdag</th>
-            <th>Torsdag</th>
-            <th>Fredag</th>
-            <th>Lördag</th>
-            <th>Söndag</th>
-          </tr>
-        </thead>
-        <tbody>
-          {weeks.map((week, i) => (
-            <tr key={i}>
-              {week.map((day, j) => (
-                <Day
-                  index={j}
-                  day={day}
-                  onClick={(e) => {
-                    if (day.date) {
-                      setSelectedDate(e.target.id);
-                    }
-                  }}
-                />
-              ))}
-            </tr>
-          ))}
-        </tbody>
+          <CalendarBody
+            weeks={splitInWeeks(days)}
+            setSelectedDate={setSelectedDate}
+            setDeleteModalOpen={setDeleteModalOpen}
+            setAddModalOpen={setAddModalOpen}
+          />
       </table>
-      {selectedDate && !tasksForDate(selectedDate) && (
+            
+
+      {
+      addModalOpen && (
         <AddToDo
-          date={selectedDate}
-          onSave={(task) => {
-            setToDoList([...toDoList, { task, date: selectedDate }]);
-            localStorage.setItem("savedList", JSON.stringify(toDoList))
+        setAddModalOpen={setAddModalOpen}
+        selectedDate={selectedDate}
+          saveTask={(task) => {
+            if(task) {setToDoList([...toDoList, { task, date: selectedDate.date }]);
+            localStorage.setItem("savedList", JSON.stringify(toDoList))} //flytta till modul
           }}
-          onCancel={() => setSelectedDate(null)}
         />
       )}
       {/* rendera om villkor uppfyllda */}
-      {selectedDate && tasksForDate(selectedDate) && (
+      { 
+      // selectedDate && tasksForDate(selectedDate)
+       deleteModalOpen && (
         <DeleteToDo
-          onDelete={(title) => {
-            setToDoList([]);
-          }}
-          eventText={tasksForDate(selectedDate)}
-          onClose={() => setSelectedDate(null)}
+        setDeleteModalOpen={setDeleteModalOpen}
+        selectedDate={selectedDate}
+        setSelectedDate={setSelectedDate}
+        eventText={tasksForDate(selectedDate)} 
         />
       )}
       {/* det här går inte för det räknar med att det bara finns ett evnt per dag */}
