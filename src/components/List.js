@@ -14,17 +14,14 @@ function List({ toDoList, monthHeadline }) {
 
   toDoList.sort(compare);
 
-  let year = moment(monthHeadline).format("YYYY");
-  let month = moment(monthHeadline).format("MMMM");
-
   return (
     <section>
-      <h3>Uppgifter för {month}</h3>
+      <h3>Uppgifter denna månad</h3>
       <ol>
         {toDoList.map((toDo) =>
-          toDo.date.includes(month) && toDo.date.includes(year) ? (
+          toDo.date.includes(monthHeadline) ? (
             <li>
-              <strong>{toDo.task}</strong>, deadline{" "}
+              <strong>{toDo.task}</strong>, senast{" "}
               {moment(toDo.date).format("DD MMMM")}
             </li>
           ) : (
