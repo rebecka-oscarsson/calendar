@@ -34,19 +34,13 @@ function App() {
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
 
 
-  //funktionen som skapar kalendern och körs i useeffect
+  //funktionen som hämtar datumen till kalendern och körs i useeffect
   function getDaysInMonth(holidaysForMonth) {
     let momentObj = moment();
-
-    //om användaren tryckt fram eller bak ändras månaden i moment-objektet
     if (monthIndex !== 0) {
       momentObj = moment().set("month", moment().month() + monthIndex);
     }
-
-    //rubriken ovanför kalendern sätts till rätt månad och år
     setMonthHeadline(momentObj.format("MMMM YYYY"));
-
-    //räknar ut antal dagar i månad och "tomma" veckodagar från förra månaden
     var firstDayNumber = momentObj.startOf("month").isoWeekday();
     let emptySquares; //veckodagar som tillhör förra månaden
     if (firstDayNumber === 0) {
@@ -62,7 +56,7 @@ function App() {
   }
 
   useEffect(getDaysInMonth, [toDoList, monthIndex]);
-  useEffect(()=>{fetchHolidays(moment(monthHeadline).format("YYYY/MM"), getDaysInMonth); console.log("helgdagar hämtades")}, [monthHeadline]);
+  useEffect(()=>{fetchHolidays(moment(monthHeadline).format("YYYY/MM"), getDaysInMonth)}, [monthHeadline]);
 
   return (
     <>
