@@ -61,6 +61,7 @@ function App() {
       daysArray = addHolidays(holidaysForMonth, daysArray);
     } //detta körs enbart i callback från fetch
     setDays(daysArray);
+    saveList("savedList", toDoList)
   }
 
   useEffect(getDaysInMonth, [toDoList, monthIndex]);
