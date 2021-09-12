@@ -11,16 +11,17 @@ import DeleteToDo from "./components/DeleteToDo";
 //mina moduler
 import fetchHolidays from "./modules/fetchHolidays";
 import { saveList, getList } from "./modules/storeData";
-import { addHolidays, createDaysArray, splitInWeeks } from "./modules/calendarData";
+import {
+  addHolidays,
+  createDaysArray,
+  splitInWeeks,
+} from "./modules/calendarData";
 import { defaultList } from "./modules/toDoList";
 
-
 function App() {
-
   //hämta listan
   let currentList = getList("savedList");
-  if (!currentList)
-    currentList = defaultList;
+  if (!currentList) currentList = defaultList;
 
   //states
   const [days, setDays] = useState([]);
@@ -32,7 +33,6 @@ function App() {
   const [selectedDate, setSelectedDate] = useState({ date: null, toDo: [] });
   const [addModalOpen, setAddModalOpen] = useState(false);
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
-
 
   //funktionen som hämtar datumen till kalendern och körs i useeffect
   function getDaysInMonth(holidaysForMonth) {
@@ -50,13 +50,23 @@ function App() {
     }
     let daysInMonth = momentObj.daysInMonth();
     let numberOfSquares = daysInMonth + emptySquares;
-    let daysArray = createDaysArray(numberOfSquares, emptySquares, momentObj, monthIndex, toDoList);
-    if(holidaysForMonth) {daysArray = addHolidays(holidaysForMonth, daysArray)}; //detta körs enbart i callback från fetch
-    setDays(daysArray)
+    let daysArray = createDaysArray(
+      numberOfSquares,
+      emptySquares,
+      momentObj,
+      monthIndex,
+      toDoList
+    );
+    if (holidaysForMonth) {
+      daysArray = addHolidays(holidaysForMonth, daysArray);
+    } //detta körs enbart i callback från fetch
+    setDays(daysArray);
   }
 
   useEffect(getDaysInMonth, [toDoList, monthIndex]);
-  useEffect(()=>{fetchHolidays(moment(monthHeadline).format("YYYY/MM"), getDaysInMonth)}, [monthHeadline]);
+  useEffect(() => {
+    fetchHolidays(moment(monthHeadline).format("YYYY/MM"), getDaysInMonth);
+  }, [monthHeadline]);
 
   return (
     <>
@@ -88,26 +98,24 @@ function App() {
             if (task) {
               setToDoList([...toDoList, { task, date: selectedDate.date }]);
               saveList("savedList", toDoList);
-            } 
+            }
           }}
         />
       )}
-      {
-        deleteModalOpen && (
-          <DeleteToDo
-            setDeleteModalOpen={setDeleteModalOpen}
-            selectedDate={selectedDate}
-            setSelectedDate={setSelectedDate}
-            deleteTask={(task) => {
-              let newList = toDoList.filter((toDo) => {
-                return toDo.task !== task;
-              });
-              setToDoList(newList);
-              saveList("savedList", newList);
-            }}
-          />
-        )
-      }
+      {deleteModalOpen && (
+        <DeleteToDo
+          setDeleteModalOpen={setDeleteModalOpen}
+          selectedDate={selectedDate}
+          setSelectedDate={setSelectedDate}
+          deleteTask={(task) => {
+            let newList = toDoList.filter((toDo) => {
+              return toDo.task !== task;
+            });
+            setToDoList(newList);
+            saveList("savedList", newList);
+          }}
+        />
+      )}
     </>
   );
 }

@@ -8,4 +8,4 @@ function getList(savedList) {
   return JSON.parse(localStorage.getItem(savedList));
 }
 
-export { saveList , getList };
+export { saveList, getList };

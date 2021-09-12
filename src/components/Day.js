@@ -9,13 +9,15 @@ function Day({ setDeleteModalOpen, setAddModalOpen, day, setSelectedDate }) {
     className = "day today";
   }
   let numberOfTasks = false;
-  if (day.toDo) {numberOfTasks = day.toDo.length}
+  if (day.toDo) {
+    numberOfTasks = day.toDo.length;
+  }
 
   return (
-    <td id={day.id} className={className} >
+    <td id={day.id} className={className}>
       <div>
         <span className="date-digit">
-          {day.date} 
+          {day.date}
 
           {day.date && (
             <button
@@ -23,28 +25,33 @@ function Day({ setDeleteModalOpen, setAddModalOpen, day, setSelectedDate }) {
               onClick={(e) => {
                 setDeleteModalOpen(false);
                 setAddModalOpen(true);
-                setSelectedDate({date: e.target.className, toDo: day.toDo})
+                setSelectedDate({ date: e.target.className, toDo: day.toDo });
               }}
             >
               +
             </button>
           )}
-          
         </span>
-{day.holiday ? <div className="holiday">{day.holiday}</div> : ""}
-{numberOfTasks ? <>{numberOfTasks} uppgifter</> : <br />}
-        {numberOfTasks ? 
-          day.toDo.map(toDo=><a href="javascript.void(0)"
-          className={day.id}
-            onClick={(e) => {
-              e.preventDefault()
-              setDeleteModalOpen(true);
-              setAddModalOpen(false);
-              setSelectedDate({date: e.target.className, toDo: day.toDo})
-            }}
-          >{toDo}          
-          </a>)
-        : <br />}
+        {day.holiday ? <div className="holiday">{day.holiday}</div> : ""}
+        {numberOfTasks ? <>{numberOfTasks} uppgifter</> : <br />}
+        {numberOfTasks ? (
+          day.toDo.map((toDo) => (
+            <a
+              href="javascript.void(0)"
+              className={day.id}
+              onClick={(e) => {
+                e.preventDefault();
+                setDeleteModalOpen(true);
+                setAddModalOpen(false);
+                setSelectedDate({ date: e.target.className, toDo: day.toDo });
+              }}
+            >
+              {toDo}
+            </a>
+          ))
+        ) : (
+          <br />
+        )}
       </div>
     </td>
   );
