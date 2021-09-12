@@ -1,31 +1,28 @@
 import { useState, useEffect } from "react";
+import moment from "moment";
+
+//mina komponenter
 import CalendarHeader from "./components/CalendarHeader";
 import CalendarBody from "./components/CalendarBody";
 import List from "./components/List";
 import AddToDo from "./components/AddToDo";
 import DeleteToDo from "./components/DeleteToDo";
-import moment from "moment";
+
+//mina moduler
+import fetchHolidays from "./modules/fetchHolidays";
+import { saveList, getList } from "./modules/storeData";
+import { addHolidays, createDaysArray, splitInWeeks } from "./modules/calendarData";
+import { defaultList } from "./modules/toDoList";
+
 
 function App() {
-  //skapa klass
-  class ToDo {
-    constructor(task, date) {
-      this.task = task;
-      this.date = date;
-    }
-  }
 
-  let currentList = JSON.parse(localStorage.getItem("savedList"));
+  //hämta listan
+  let currentList = getList("savedList");
   if (!currentList)
-    currentList = [
-      new ToDo("vattna morfar", "28 September 2021"),
-      new ToDo("rasta krukväxten", "6 January 2022"),
-      new ToDo("dammsug katten", "28 September 2021"),
-    ];
+    currentList = defaultList;
 
-  // let dayString = moment().toString();
-
-  //alla states
+  //states
   const [days, setDays] = useState([]);
   const [toDoList, setToDoList] = useState(currentList);
   const [monthIndex, setmonthIndex] = useState(0); //0 är innevarande månad
@@ -36,43 +33,9 @@ function App() {
   const [addModalOpen, setAddModalOpen] = useState(false);
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
 
-  // moment.locale('sv'); funkar inte
-
-  //en funktion som hittar toDos för ett datum
-  let tasksForDate = (date) => {
-    let tasks = [];
-    for (let index = 0; index < toDoList.length; index++) {
-      if (toDoList[index].date === date) {
-        tasks.push(toDoList[index].task);
-      }
-    }
-    return tasks;
-  };
-  //en funktion som gör en array av dagarna i en månad
-  function createDaysArray(numberOfSquares, emptySquares, momentObj) {
-    let daysArray = [];
-    let dateToday = moment().date();
-    for (let index = 0; index < numberOfSquares; index++) {
-      if (index < emptySquares) {
-        daysArray.push({ date: null });
-      } else {
-        let dateOfDay = index - emptySquares + 1; //lägger på 1 eftersom index börjar på noll
-        let dateString =
-          dateOfDay + " " + momentObj.format("MMMM YYYY").toString();
-        daysArray.push({
-          id: dateString, //momentObj är den första i månaden för jag glömt kopiera och ändrat originalet
-          date: dateOfDay,
-          toDo: tasksForDate(dateString) ? tasksForDate(dateString) : false,
-          isToday: dateOfDay === dateToday && monthIndex === 0,
-        });
-      }
-    }
-    return daysArray;
-  }
 
   //funktionen som skapar kalendern och körs i useeffect
-  function createCalendar() {
-    //skapa ett momentobjekt:
+  function getDaysInMonth(holidaysForMonth) {
     let momentObj = moment();
 
     //om användaren tryckt fram eller bak ändras månaden i moment-objektet
@@ -93,27 +56,13 @@ function App() {
     }
     let daysInMonth = momentObj.daysInMonth();
     let numberOfSquares = daysInMonth + emptySquares;
-    let daysArray = createDaysArray(numberOfSquares, emptySquares, momentObj);
-    setDays(daysArray);
+    let daysArray = createDaysArray(numberOfSquares, emptySquares, momentObj, monthIndex, toDoList);
+    if(holidaysForMonth) {daysArray = addHolidays(holidaysForMonth, daysArray)}; //detta körs enbart i callback från fetch
+    setDays(daysArray)
   }
 
-  //funktion som delar upp månads-array i vecko-arrays
-  function splitInWeeks(monthArray) {
-    const result = [];
-    for (let i = 0; i < monthArray.length; i += 7) {
-      const weekArray = monthArray.slice(i, i + 7);
-      result.push(weekArray);
-    }
-    return result;
-  }
-
-  // Funktion för att lägga till en ny item till en lista.
-  function saveList(savedList, currentList) {
-    localStorage.setItem(savedList, JSON.stringify(currentList));
-  }
-
-  useEffect(createCalendar, [toDoList, monthIndex]);
-  //första argumentet är en funktion, andra argumentet en array av värden, när dessa ändras körs funktionen
+  useEffect(getDaysInMonth, [toDoList, monthIndex]);
+  useEffect(()=>{fetchHolidays(moment(monthHeadline).format("YYYY/MM"), getDaysInMonth); console.log("helgdagar hämtades")}, [monthHeadline]);
 
   return (
     <>
@@ -144,33 +93,27 @@ function App() {
           saveTask={(task) => {
             if (task) {
               setToDoList([...toDoList, { task, date: selectedDate.date }]);
-              localStorage.setItem("savedList", JSON.stringify(toDoList));
-            } //flytta till modul
+              saveList("savedList", toDoList);
+            } 
           }}
         />
       )}
-      {/* rendera om villkor uppfyllda */}
       {
-        // selectedDate && tasksForDate(selectedDate)
         deleteModalOpen && (
           <DeleteToDo
             setDeleteModalOpen={setDeleteModalOpen}
             selectedDate={selectedDate}
             setSelectedDate={setSelectedDate}
-            deleteTask={function(task){
-              let newList = toDoList.filter(function(toDo) {
+            deleteTask={(task) => {
+              let newList = toDoList.filter((toDo) => {
                 return toDo.task !== task;
               });
-              setToDoList(
-                newList)
-              ;
-              localStorage.setItem("savedList", JSON.stringify(newList));
-              //flytta till modul
+              setToDoList(newList);
+              saveList("savedList", newList);
             }}
           />
         )
       }
-      {/* det här går inte för det räknar med att det bara finns ett evnt per dag */}
     </>
   );
 }

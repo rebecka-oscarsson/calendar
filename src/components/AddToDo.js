@@ -13,9 +13,11 @@ function AddToDo({ setAddModalOpen, selectedDate, saveTask }) {
         value={inputText}
         onChange={(e) => setInputText(e.target.value)}
       ></input>
-      <button onClick = {()=>saveTask(inputText)}
+      <div>
+      <button onClick = {()=>{saveTask(inputText); setInputText("sparat!")} }
       >spara</button>
-      {<button onClick={()=>setAddModalOpen(false)}>stäng</button> /*kanske behöver jag set selectedDate till null oxå? */}
+      {<button onClick={()=>setAddModalOpen(false)}>stäng</button>}
+      </div>
     </div>
     </section>
   );

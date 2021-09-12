@@ -15,7 +15,7 @@ function Day({ setDeleteModalOpen, setAddModalOpen, day, setSelectedDate }) {
     <td id={day.id} className={className} >
       <div>
         <span className="date-digit">
-          {day.date}
+          {day.date} 
 
           {day.date && (
             <button
@@ -29,8 +29,9 @@ function Day({ setDeleteModalOpen, setAddModalOpen, day, setSelectedDate }) {
               +
             </button>
           )}
+          
         </span>
-
+{day.holiday ? <div className="holiday">{day.holiday}</div> : <br />}
         {numberOfTasks ? 
           day.toDo.map(toDo=><a href="javascript.void(0)"
           className={day.id}

@@ -2,7 +2,7 @@ import React from 'react';
 import moment from "moment";
 
 function DeleteToDo({setDeleteModalOpen, selectedDate, setSelectedDate, deleteTask }) {
-    // Funktion för att radera items.
+  // Funktion för att radera items.
   //input är en array med id:s
   // function removeCompleted(completed) {
   //   currentList = currentList.filter(
@@ -12,10 +12,10 @@ function DeleteToDo({setDeleteModalOpen, selectedDate, setSelectedDate, deleteTa
   // }
     return (
       <section className="modal"><div>
-        Saker att göra {moment(selectedDate.date).format("DD MMMM")}
-        <div>{selectedDate.toDo.map(toDo=><p>{toDo} <button
-        onClick={()=>deleteTask(toDo)}>ta bort</button></p>)}</div>
-        <button onClick={()=>{setDeleteModalOpen(false); setSelectedDate(null)}}>stäng</button></div>
+        <h2>Saker att göra {moment(selectedDate.date).format("DD MMMM")}</h2>
+        <div>{selectedDate.toDo.map((toDo, i)=><p id={i}><span >{toDo}</span> <button
+        onClick={()=>{deleteTask(toDo); document.getElementById(i).classList.add("done")}}>ta bort</button></p>)}</div>
+        <button onClick={()=>{setDeleteModalOpen(false); setSelectedDate(null)}}>stäng/spara</button></div>
       </section>
     );
   }
