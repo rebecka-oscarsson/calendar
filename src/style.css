@@ -32,7 +32,9 @@ left: 25vw; top:25vh; background-color: antiquewhite; box-shadow: rgba(0, 0, 0, 
 
 .holiday {color: red;}
 
-.done {display:none;}
+.done button {display:none;}
+
+.done span {text-decoration: line-through;}
 
 .modal button {padding: 0.5rem; margin: 1rem;}
 

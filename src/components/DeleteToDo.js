@@ -14,7 +14,7 @@ function DeleteToDo({
         <div>
           {selectedDate.toDo.map((toDo, i) => (
             <p id={i}>
-              <span>{toDo}</span>{" "}
+              <span>{toDo}</span>
               <button
                 onClick={() => {
                   deleteTask(toDo);
