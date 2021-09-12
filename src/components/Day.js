@@ -31,7 +31,8 @@ function Day({ setDeleteModalOpen, setAddModalOpen, day, setSelectedDate }) {
           )}
           
         </span>
-{day.holiday ? <div className="holiday">{day.holiday}</div> : <br />}
+{day.holiday ? <div className="holiday">{day.holiday}</div> : ""}
+{numberOfTasks ? <>{numberOfTasks} uppgifter</> : <br />}
         {numberOfTasks ? 
           day.toDo.map(toDo=><a href="javascript.void(0)"
           className={day.id}
