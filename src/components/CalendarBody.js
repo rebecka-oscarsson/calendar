@@ -1,4 +1,3 @@
-import React from "react";
 import Day from "./Day";
 
 function CalendarBody({
@@ -11,8 +10,8 @@ function CalendarBody({
     <tbody>
       {weeks.map((week, i) => (
         <tr key={i}>
-          {week.map((day) => (
-            <Day
+          {week.map((day, j) => (
+            <Day key={j}
               setDeleteModalOpen={setDeleteModalOpen}
               setAddModalOpen={setAddModalOpen}
               day={day}

@@ -18,9 +18,9 @@ function List({ toDoList, monthHeadline }) {
     <section>
       <h3>Uppgifter denna månad</h3>
       <ol>
-        {toDoList.map((toDo) =>
+        {toDoList.map((toDo, i) =>
           toDo.date.includes(monthHeadline) ? (
-            <li>
+            <li key={i}>
               <strong>{toDo.task}</strong>, senast{" "}
               {moment(toDo.date).format("DD MMMM")}
             </li>

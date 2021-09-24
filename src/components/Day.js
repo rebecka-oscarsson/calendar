@@ -1,5 +1,3 @@
-import React from "react";
-
 function Day({ setDeleteModalOpen, setAddModalOpen, day, setSelectedDate }) {
   let className;
   if (day.date) {
@@ -14,7 +12,7 @@ function Day({ setDeleteModalOpen, setAddModalOpen, day, setSelectedDate }) {
   }
 
   return (
-    <td id={day.id} className={className}>
+    <td id={day.id} key={day.id} className={className}>
       <div>
         <span className="date-digit">
           {day.date}
@@ -39,6 +37,7 @@ function Day({ setDeleteModalOpen, setAddModalOpen, day, setSelectedDate }) {
             <a
               href="javascript.void(0)"
               className={day.id}
+              key = {day.id}
               onClick={(e) => {
                 e.preventDefault();
                 setDeleteModalOpen(true);
